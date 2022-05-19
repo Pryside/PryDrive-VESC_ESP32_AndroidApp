@@ -9,4 +9,4 @@ Has a simple dashboard that displays data, connectes automatically after first c
 
 ESP32 Arduino Firmware:
 
-https://github.com/Pryside/ESP32-VESC-Bluetooth-Android-VCU
+[ESP32-VESC-Bluetooth-Android-VCU](https://github.com/Pryside/ESP32-VESC-Bluetooth-Android-VCU)
