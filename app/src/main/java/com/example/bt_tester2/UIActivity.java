@@ -32,8 +32,8 @@ public class UIActivity extends AppCompatActivity {
     final byte[] hellomsg = {'s', 't', 'a', 'r', 't', '\n'};
 
 
-    final int datapoints=13;
-    float[] data = new float[13];
+    final int datapoints=14;
+    float[] data = new float[datapoints];
 
     byte[] rawdata = null;
 
@@ -267,16 +267,9 @@ public class UIActivity extends AppCompatActivity {
         btdata.totalWh      = data[10];
         btdata.totalWhC     = data[11];
         btdata.totalkm      = data[12];
+        btdata.percent      = data[13];
 
 
-        //Temp Config PLS DELETE LATER
-        int cells_s = 12;
-        float batt_low = 3.0f, batt_high = 4.2f;
-
-        float percent = (btdata.inpVolt-(batt_low*(float)cells_s)) * ((100.0f/((batt_high-batt_low)*(float)cells_s)));
-        if (percent > 100) percent = 100;
-        if (percent < 0) percent = 0;
-        btdata.percent = percent;
         btdata.power = btdata.batCurr * btdata.inpVolt;
         if (btdata.power > btdata.maxpower) btdata.maxpower = btdata.power;
         if (btdata.power < btdata.minpower) btdata.minpower = btdata.power;

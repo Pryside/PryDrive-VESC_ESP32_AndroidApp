@@ -17,7 +17,7 @@ public class BluetoothHandler{
     static BluetoothDevice esp32;
     // final char endofmsg[] = ("ENDOF\n"+0).toCharArray();
     final Byte[] endofmsg = {'E', 'N', 'D', 'O', 'F', '\n'};    //this terminates the message
-    final int messagelen = 70;                                  //to check if full message came
+    final int messagelen = 75;                                  //to check if full message came
     final int enofmsglen = endofmsg.length-1;
 
     Handler handler;

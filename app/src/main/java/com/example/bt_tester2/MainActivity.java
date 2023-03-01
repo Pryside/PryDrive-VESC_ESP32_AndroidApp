@@ -8,19 +8,13 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.IOException;
+import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -33,8 +27,9 @@ public class MainActivity extends AppCompatActivity {
     BluetoothSocket btSocket;
 
 
-    ArrayList mac_adresses = new ArrayList();
-    ArrayList device_names = new ArrayList();
+    ArrayList<String> mac_addresses = new ArrayList<String>();
+    ArrayList<String> device_names = new ArrayList<String>();
+
 
 
     static final UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -55,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         String savedmac = sharedPref.getString(MAC_SAVE, "");
         String saveddevice = sharedPref.getString(DEVICE_SAVE, "");
-        if (savedmac != ""){
+        if (!savedmac.equals("")){
             StartUIActivity(saveddevice,savedmac);
         }
         System.out.println(savedmac);
@@ -64,13 +59,13 @@ public class MainActivity extends AppCompatActivity {
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             // There are paired devices. Get the name and address of each paired device.
-            ArrayList list = new ArrayList();
+            ArrayList<String> list = new ArrayList<String>();
 
             for (BluetoothDevice device : pairedDevices) {
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 list.add(deviceName+"\n"+deviceHardwareAddress);
-                mac_adresses.add(deviceHardwareAddress);
+                mac_addresses.add(deviceHardwareAddress);
                 device_names.add(deviceName);
             }
 
@@ -85,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
                 String devicename = device_names.get(position).toString();
-                String mac = mac_adresses.get(position).toString();
+                String mac = mac_addresses.get(position).toString();
 
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString(MAC_SAVE,mac);
