@@ -28,17 +28,18 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/speedtext"
-        app:layout_constraintVertical_bias="0.563" />
+        app:layout_constraintVertical_bias="0.662" />
 
     <TextView
         android:id="@+id/speedtext"
-        android:layout_width="241dp"
-        android:layout_height="134dp"
-        android:layout_marginTop="28dp"
+        android:layout_width="224dp"
+        android:layout_height="113dp"
+        android:layout_marginTop="4dp"
         android:text="0.0"
         android:textAlignment="center"
         android:textSize="96sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,12 +60,13 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="140dp"
+        android:layout_marginTop="100dp"
         android:text="Km/h"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/speedtext" />
 
     <TextView
         android:id="@+id/textVoltage"

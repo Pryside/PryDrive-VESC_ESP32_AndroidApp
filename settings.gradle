@@ -1,2 +1,2 @@
-rootProject.name = "BT_Tester2"
+rootProject.name = "PryDriveV2"
 include ':app'
