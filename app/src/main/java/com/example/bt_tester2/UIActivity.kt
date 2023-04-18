@@ -14,6 +14,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.*
 import android.view.View
+import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -33,30 +34,27 @@ private const val CHAR_FOR_WRITE_UUID = "25AE1443-05D3-4C5B-8281-93D4E07420CF"
 private const val CCC_DESCRIPTOR_UUID = "00002902-0000-1000-8000-00805f9b34fb"
 
 
-
-
-
 open class UIActivity : AppCompatActivity() {
 
 
     val Notify_UUIDs = arrayOf(
-        "25AE1447-05D3-4C5B-8281-93D4E07420CF"  ,
-        "25AE1448-05D3-4C5B-8281-93D4E07420CF"  ,
-        "25AE1449-05D3-4C5B-8281-93D4E07420CF"  ,
+        "25AE1447-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1448-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1449-05D3-4C5B-8281-93D4E07420CF",
         "25AE1446-05D3-4C5B-8281-93D4E07420CF"
     )
 
     val Read_UUIDs = arrayOf(
-        "25AE1445-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1450-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1451-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1452-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1453-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1454-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1455-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1456-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1457-05D3-4C5B-8281-93D4E07420CF" ,
-        "25AE1458-05D3-4C5B-8281-93D4E07420CF" ,
+        "25AE1445-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1450-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1451-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1452-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1453-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1454-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1455-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1456-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1457-05D3-4C5B-8281-93D4E07420CF",
+        "25AE1458-05D3-4C5B-8281-93D4E07420CF",
     )
     var bluetoothdata = FloatArray(14)
 
@@ -108,26 +106,19 @@ open class UIActivity : AppCompatActivity() {
     }
 
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_uiactivity)
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        registerReceiver(bleOnOffListener, filter)
 
-        userWantsToScanAndConnect = true
-        if (userWantsToScanAndConnect){
-            val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-            registerReceiver(bleOnOffListener, filter)
-        }
-        else{
-            unregisterReceiver(bleOnOffListener)
-        }
+        //for turning off use
+        // unregisterReceiver(bleOnOffListener)
+
         bleRestartLifecycle()
-        appendLog("got here")
-
-
-
+        //appendLog("got here")
 
 
         val Settingsbutton = findViewById<ImageButton>(R.id.settingsbutton)
@@ -158,6 +149,8 @@ open class UIActivity : AppCompatActivity() {
         val mySwitch = findViewById<View>(R.id.enableswitch) as Switch
         if (mySwitch.isChecked) {
         }
+
+
         StartDrawing()
 
     }
@@ -167,22 +160,29 @@ open class UIActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun StartDrawing() {
+    private fun StartDrawing() {
         val myview = findViewById<GraphView>(R.id.relativeLayout)
         myview.invalidate()
-        Thread {
+
+
+        Thread(Runnable {
             Timer().scheduleAtFixedRate(object : TimerTask() {
                 override fun run() {
+                    CalculateData()
+
+                    //DisplayData()
                     runOnUiThread {
-                        CalculateData()
                         DisplayData()
                     }
                     myview.setData(getPower())
                     myview.invalidate()
                 }
             }, 10, 50)
-            println("RUNNING")
-        }.start()
+        }).start()
+
+
+        //Thread {
+        //}.start()
     }
 
     fun ConnectBT() {
@@ -197,21 +197,21 @@ open class UIActivity : AppCompatActivity() {
     fun CalculateData() {
         //Extract data into Floats
         //Write data into correct containers
-        btdata.batCurr      = bluetoothdata[0]
-        btdata.kmh          = bluetoothdata[1]
-        btdata.inpVolt      = bluetoothdata[2]
-        btdata.motorCurr    = bluetoothdata[3]
+        btdata.batCurr = bluetoothdata[0]
+        btdata.kmh = bluetoothdata[1]
+        btdata.inpVolt = bluetoothdata[2]
+        btdata.motorCurr = bluetoothdata[3]
 
-        btdata.tempMotor    = bluetoothdata[4]
-        btdata.ampHours     = bluetoothdata[5]
-        btdata.ampHoursC    = bluetoothdata[6]
-        btdata.km           = bluetoothdata[7]
-        btdata.wattHours    = bluetoothdata[8]
-        btdata.wattHoursC   = bluetoothdata[9]
-        btdata.totalWh      = bluetoothdata[10]
-        btdata.totalWhC     = bluetoothdata[11]
-        btdata.totalkm      = bluetoothdata[12]
-        btdata.percent      = bluetoothdata[13]
+        btdata.tempMotor = bluetoothdata[4]
+        btdata.ampHours = bluetoothdata[5]
+        btdata.ampHoursC = bluetoothdata[6]
+        btdata.km = bluetoothdata[7]
+        btdata.wattHours = bluetoothdata[8]
+        btdata.wattHoursC = bluetoothdata[9]
+        btdata.totalWh = bluetoothdata[10]
+        btdata.totalWhC = bluetoothdata[11]
+        btdata.totalkm = bluetoothdata[12]
+        btdata.percent = bluetoothdata[13]
 
         btdata.power = btdata.inpVolt * btdata.batCurr
         //power sizing for graph use
@@ -221,9 +221,12 @@ open class UIActivity : AppCompatActivity() {
 
     fun DisplayData() {
         batbar!!.progress = btdata.percent.toInt()
-        Voltage!!.text = "🔋 " + btdata.inpVolt + "V " + btdata.percent.roundToInt() +"%"
+        Voltage!!.text = "🔋 " + round(btdata.inpVolt.toDouble(), 1) + "V   " + round(
+            btdata.percent.toDouble(),
+            1
+        ) + "%"
         kmh!!.text = round(btdata.kmh.toDouble(), 1).toString() + ""
-        Power!!.text = "⚡ " + btdata.power.roundToInt() + "W"
+        Power!!.text = "⚡ " + round(btdata.power.toDouble(), 0) + "W"
         Amps!!.text = "Battery " + round(btdata.batCurr.toDouble(), 1) + "A"
         Distance!!.text = "Trip " + round(btdata.km.toDouble(), 2) + "Km"
         TotalDistance!!.text = "Odo " + round(btdata.totalkm.toDouble(), 1) + "km"
@@ -257,15 +260,14 @@ open class UIActivity : AppCompatActivity() {
     }
 
 
-
     //################################################################################
     //                          BLE PART BELOW
     //################################################################################
 
 
-
     private var activityResultHandlers = mutableMapOf<Int, (Int) -> Unit>()
-    private var permissionResultHandlers = mutableMapOf<Int, (Array<out String>, IntArray) -> Unit>()
+    private var permissionResultHandlers =
+        mutableMapOf<Int, (Array<out String>, IntArray) -> Unit>()
     private var bleOnOffListener = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF)) {
@@ -331,19 +333,21 @@ open class UIActivity : AppCompatActivity() {
         }
 
 
-
-    private var userWantsToScanAndConnect = false
     private var isScanning = false
     private var connectedGatt: BluetoothGatt? = null
     private var characteristicForWrite: BluetoothGattCharacteristic? = null
 
-    private var characteristicsForNotify = arrayOf<BluetoothGattCharacteristic?>(null, null,
-        null, null)
-    //4 notifys
-    private var characteristicsForRead = arrayOf<BluetoothGattCharacteristic?>(null, null, null,
-        null, null, null, null, null, null, null)
-    //10 reads
+    private var characteristicsForNotify = arrayOf<BluetoothGattCharacteristic?>(
+        null, null,
+        null, null
+    )
 
+    //4 notifys
+    private var characteristicsForRead = arrayOf<BluetoothGattCharacteristic?>(
+        null, null, null,
+        null, null, null, null, null, null, null
+    )
+    //10 reads
 
 
     fun readCharacteristics() {
@@ -352,13 +356,9 @@ open class UIActivity : AppCompatActivity() {
             appendLog("ERROR: read failed, no connected device")
             return
         }
-        for (i in Read_UUIDs.indices){
 
-            Timer().schedule(100*i.toLong()) {
-                //appendLog(Read_UUIDs[i].toString())
-                var characteristic = characteristicsForRead[i]
-                gatt.readCharacteristic(characteristicsForRead[i])
-            }
+
+        for (i in Read_UUIDs.indices) {
 
             var characteristic = characteristicsForRead[i] ?: run {
                 appendLog("ERROR: read failed, characteristic unavailable $Read_UUIDs[i]")
@@ -367,6 +367,12 @@ open class UIActivity : AppCompatActivity() {
             if (!characteristic.isReadable()) {
                 appendLog("ERROR: read failed, characteristic not readable $Read_UUIDs[i]")
                 return
+            }
+
+            Timer().schedule(100 * i.toLong()) {
+                //appendLog(Read_UUIDs[i].toString())
+                var characteristic = characteristicsForRead[i]
+                gatt.readCharacteristic(characteristicsForRead[i])
             }
 
 
@@ -378,7 +384,7 @@ open class UIActivity : AppCompatActivity() {
             appendLog("ERROR: write failed, no connected device")
             return
         }
-        var characteristic = characteristicForWrite ?:  run {
+        var characteristic = characteristicForWrite ?: run {
             appendLog("ERROR: write failed, characteristic unavailable $CHAR_FOR_WRITE_UUID")
             return
         }
@@ -403,27 +409,31 @@ open class UIActivity : AppCompatActivity() {
         characteristicForWrite = null
         //characteristicForIndicate = null
 
-        for (i in characteristicsForNotify.indices){
+        for (i in characteristicsForNotify.indices) {
             characteristicsForNotify[i] = null
         }
-        for (i in characteristicsForRead.indices){
+        for (i in characteristicsForRead.indices) {
             characteristicsForRead[i] = null
         }
 
     }
 
     private fun bleRestartLifecycle() {
-        runOnUiThread {
-            if (userWantsToScanAndConnect) {
-                if (connectedGatt == null) {
-                    prepareAndStartBleScan()
-                } else {
-                    connectedGatt?.disconnect()
-                }
+
+
+        Thread(Runnable {
+            if (connectedGatt == null) {
+                prepareAndStartBleScan()
             } else {
-                bleEndLifecycle()
+                connectedGatt?.disconnect()
             }
-        }
+
+            //for stopping use
+            //bleEndLifecycle()
+        }).start()
+
+        //Thread {
+        //}.start()
     }
 
     private fun prepareAndStartBleScan() {
@@ -460,7 +470,10 @@ open class UIActivity : AppCompatActivity() {
         bleScanner.stopScan(scanCallback)
     }
 
-    private fun subscribeToIndications(characteristic: BluetoothGattCharacteristic, gatt: BluetoothGatt) {
+    private fun subscribeToIndications(
+        characteristic: BluetoothGattCharacteristic,
+        gatt: BluetoothGatt
+    ) {
         val cccdUuid = UUID.fromString(CCC_DESCRIPTOR_UUID)
         appendLog("Subscribing to: " + characteristic.uuid.toString())
 
@@ -469,7 +482,7 @@ open class UIActivity : AppCompatActivity() {
                 appendLog("ERROR: setNotification(true) failed for ${characteristic.uuid}")
                 //return
             }
-            cccDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+            cccDescriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
             gatt.writeDescriptor(cccDescriptor)
 
         }
@@ -488,7 +501,6 @@ open class UIActivity : AppCompatActivity() {
             gatt.writeDescriptor(cccDescriptor)
         }
     }
-
 
 
     //region BLE Scanning
@@ -531,7 +543,7 @@ open class UIActivity : AppCompatActivity() {
             lifecycleState = BLELifecycleState.Connecting
 
             Timer().schedule(500) {
-                result.device.connectGatt(this@UIActivity, true, gattCallback,2)
+                result.device.connectGatt(this@UIActivity, true, gattCallback, 2)
             }
         }
 
@@ -607,7 +619,7 @@ open class UIActivity : AppCompatActivity() {
             connectedGatt = gatt
             characteristicForWrite = service.getCharacteristic(UUID.fromString(CHAR_FOR_WRITE_UUID))
 
-            for(i in Notify_UUIDs.indices) {
+            for (i in Notify_UUIDs.indices) {
 
 
                 characteristicsForNotify[i] =
@@ -615,7 +627,7 @@ open class UIActivity : AppCompatActivity() {
 
                 characteristicsForNotify[i]?.let {
                     lifecycleState = BLELifecycleState.ConnectedSubscribing
-                    Timer().schedule(50*i.toLong()+50) {
+                    Timer().schedule(50 * i.toLong() + 50) {
                         subscribeToIndications(it, gatt)
                     }
                 } ?: run {
@@ -624,8 +636,9 @@ open class UIActivity : AppCompatActivity() {
                 }
 
             }
-            for(i in characteristicsForRead.indices){
-                characteristicsForRead[i] = service.getCharacteristic(UUID.fromString(Read_UUIDs[i]))
+            for (i in characteristicsForRead.indices) {
+                characteristicsForRead[i] =
+                    service.getCharacteristic(UUID.fromString(Read_UUIDs[i]))
             }
 
             Thread {
@@ -637,16 +650,20 @@ open class UIActivity : AppCompatActivity() {
             }.start()
         }
 
-        override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
+        override fun onCharacteristicRead(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            status: Int
+        ) {
             //appendLog("READ EXECUTED")
             var found = false
-            for (i in Read_UUIDs.indices){
+            for (i in Read_UUIDs.indices) {
                 found = true
                 if (characteristic.uuid == UUID.fromString(Read_UUIDs[i])) {
                     val strValue = characteristic.value
                     val buffer = ByteBuffer.wrap(strValue.reversedArray())
                     val asfloat = buffer.float
-                    bluetoothdata[i+BT_NOTIFYS] = asfloat
+                    bluetoothdata[i + BT_NOTIFYS] = asfloat
                     //appendLog("Read this: " + asfloat)
 
                     /*val log = "onCharacteristicRead " + Read_UUIDs[i].toString() + "  "+ when (status)  {
@@ -656,18 +673,22 @@ open class UIActivity : AppCompatActivity() {
                     }
                     appendLog(log)*/
                     //runOnUiThread {
-                        //CalculateData(bluetoothdata)
-                        //update on screen data!!
-                        //textViewReadValue.text = strValue
+                    //CalculateData(bluetoothdata)
+                    //update on screen data!!
+                    //textViewReadValue.text = strValue
                     //}
                 }
             }
-            if (!found){
+            if (!found) {
                 appendLog("onCharacteristicRead unknown uuid $characteristic.uuid")
             }
         }
 
-        override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
+        override fun onCharacteristicWrite(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic,
+            status: Int
+        ) {
             if (characteristic.uuid == UUID.fromString(CHAR_FOR_WRITE_UUID)) {
                 val log: String = "onCharacteristicWrite " + when (status) {
                     BluetoothGatt.GATT_SUCCESS -> "OK"
@@ -681,9 +702,12 @@ open class UIActivity : AppCompatActivity() {
             }
         }
 
-        override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
+        override fun onCharacteristicChanged(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic
+        ) {
             var found = false
-            for (i in Notify_UUIDs.indices){
+            for (i in Notify_UUIDs.indices) {
                 if (characteristic.uuid == UUID.fromString(Notify_UUIDs[i])) {
                     found = true
                     val strValue = characteristic.value
@@ -697,16 +721,20 @@ open class UIActivity : AppCompatActivity() {
 
                 }
             }
-            if (!found){
+            if (!found) {
                 appendLog("onCharacteristicChanged unknown uuid $characteristic.uuid")
             }
         }
 
-        override fun onDescriptorWrite(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int) {
+        override fun onDescriptorWrite(
+            gatt: BluetoothGatt,
+            descriptor: BluetoothGattDescriptor,
+            status: Int
+        ) {
             var found = false
             appendLog("Descriptor write to: " + descriptor.characteristic.uuid.toString())
 
-            for (i in Notify_UUIDs.indices){
+            for (i in Notify_UUIDs.indices) {
                 if (descriptor.characteristic.uuid == UUID.fromString(Notify_UUIDs[i])) {
                     found = true
                     if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -727,7 +755,7 @@ open class UIActivity : AppCompatActivity() {
                     lifecycleState = BLELifecycleState.Connected
                 }
             }
-            if (!found){
+            if (!found) {
                 appendLog("onDescriptorWrite unknown uuid $descriptor.characteristic.uuid")
             }
         }
@@ -762,7 +790,6 @@ open class UIActivity : AppCompatActivity() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         activityResultHandlers[requestCode]?.let { handler ->
@@ -772,7 +799,11 @@ open class UIActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         permissionResultHandlers[requestCode]?.let { handler ->
             handler(permissions, grantResults)
@@ -814,7 +845,8 @@ open class UIActivity : AppCompatActivity() {
             val requestCode = ENABLE_BLUETOOTH_REQUEST_CODE
 
             // set activity result handler
-            activityResultHandlers[requestCode] = { result -> Unit
+            activityResultHandlers[requestCode] = { result ->
+                Unit
                 val isSuccess = result == Activity.RESULT_OK
                 if (isSuccess || askType != AskType.InsistUntilSuccess) {
                     activityResultHandlers.remove(requestCode)
@@ -910,3 +942,4 @@ open class UIActivity : AppCompatActivity() {
     }
     //endregion
 }
+
