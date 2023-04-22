@@ -482,7 +482,8 @@ open class UIActivity : AppCompatActivity() {
                 appendLog("ERROR: setNotification(true) failed for ${characteristic.uuid}")
                 //return
             }
-            cccDescriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+            //write descriptor
+            cccDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             gatt.writeDescriptor(cccDescriptor)
 
         }
